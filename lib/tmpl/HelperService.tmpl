@@ -1,0 +1,36 @@
+module
+ .factory("HelperService", function(ngLiferayHttp, ngLiferayAuth) {
+   var url = "<%=ngHelperResourceURL%>";
+
+   var R = ngLiferayHttp('', {
+   		<% var lastKey = _.last(_.keys(helperServiceMethods))  %>
+   		<% _.each(helperServiceMethods, function(args, name){ var hasArgs = args.length > 0;%>
+   			<%=name%>:{
+   				url: url + "<%=name%>",
+	       		method: "POST"<%=hasArgs ? ',' : '' %>
+	       		<%=hasArgs ? 'namespace:'+ '"' + ngHelperPortletId + '"': '' %>
+   			}<%=lastKey !== name ? ',' : '' %>   			
+   		<% }); %>
+   });
+
+   /* R.configureData = function() {    	  
+    	  var deferred = $q.defer();    	  
+    	  R.getThemeDisplayJSON().then(function(data) {
+    		  ngLiferayAuth.setData(data);
+    		  deferred.resolve(data);
+    	  }, 
+    	  function(error){
+    		  deferred.reject(error);
+    	  });
+    	  
+    	  return deferred.promise;
+      };
+
+      //run configure data for first time
+      R.configureData();*/
+      
+      //Init ngLiferayAuth from Liferay 
+      ngLiferayAuth.setData(Liferay.themeDisplay);
+  
+   return R;
+ });

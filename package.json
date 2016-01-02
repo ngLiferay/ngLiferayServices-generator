@@ -1,0 +1,23 @@
+{
+  "name": "ngliferayservices-generator",
+  "version": "0.0.5",
+  "description": "Module to generate $http based services from liferay jsonws",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "liferay",
+    "angular",
+		"jsonws"
+  ],
+  "author": "Yogesh Agarwal",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^1.5.0",
+    "js-beautify": "^1.5.10",
+    "lodash": "^3.10.1",
+    "properties-parser": "^0.3.0",
+    "request": "^2.65.0"
+  }
+}

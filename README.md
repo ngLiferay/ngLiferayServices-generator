@@ -1,0 +1,1 @@
+# ngliferayServices-generator

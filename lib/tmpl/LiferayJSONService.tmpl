@@ -1,0 +1,28 @@
+ <%_.each(contextServices, function(serviceMethods, serviceName){%>
+ module
+  .factory("<%=serviceName%>", function(ngLiferayHttp, ngLiferayAuth) {
+		var R = ngLiferayHttp('<%=jsonwsInvokeURL%>', {
+			<%var lastKey = _.last(_.keys(serviceMethods)).name%>
+	   		<%_.each(serviceMethods, function(method){%>
+          /**
+           *
+           <%_.each(method.params, function(p){%>* @param <%=p.name%> <%=p.type%>
+           <%})%>
+           */
+	   			<%=method.name%>:{
+		       		method: "<%= method.method %>",
+					params: {
+						cmd : {
+							"<%= method.fullPath%>" : {}
+						},
+						p_auth: ngLiferayAuth.authToken
+					}
+	   			}<%=lastKey !== method.name ? ',' : ''%>
+	   		<%});%>
+		});
+
+		console.log(R)
+
+		return R;
+	});
+<%});%>

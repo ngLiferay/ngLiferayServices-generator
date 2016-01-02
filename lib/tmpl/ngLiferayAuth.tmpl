@@ -1,0 +1,66 @@
+module
+	.factory('ngLiferayAuth', function () {
+		var props = ['authToken', 'currentUserId'];
+		var propsPrefix = '$lr_ng$';
+		
+		function save(storage, name, value) {
+			var key = propsPrefix + name;
+			if (value === null){
+				value = '';
+			}				
+			storage[key] = value;
+		}
+
+		function load(name) {
+			var key = propsPrefix + name;
+			return localStorage[key] || sessionStorage[key] || null;
+		}
+
+		function ngLiferayAuth() {
+			var self = this;
+			props.forEach(function (name) {
+				self[name] = load(name);
+			});
+			this.rememberMe = undefined;
+			this.currentUser = null;
+			this.themeDisplay = null;
+		}
+
+		ngLiferayAuth.prototype.save = function () {
+			var self = this;
+			var storage = this.rememberMe ? localStorage : sessionStorage;
+			props.forEach(function (name) {
+				save(storage, name, self[name]);
+			});
+		};
+
+		ngLiferayAuth.prototype.setData = function (data) {
+			this.currentUser = data.user;
+			this.currentUserId = data.user.userId;
+			this.authToken = data.authToken;
+
+			delete data.user;
+			this.themeDisplay = data;
+			
+			this.save();
+		};
+
+		ngLiferayAuth.prototype.clearData= function () {
+			this.authToken = null;
+			this.currentUserId = null;
+			this.currentUser = null;
+			this.themeDisplay = null;
+			
+			this.clearStorage();
+		};
+
+		ngLiferayAuth.prototype.clearStorage = function () {
+			props.forEach(function (name) {
+				save(sessionStorage, name, null);
+				save(localStorage, name, null);
+			});
+		};
+
+		return new ngLiferayAuth();
+
+	});

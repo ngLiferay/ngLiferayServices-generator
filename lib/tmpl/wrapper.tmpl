@@ -1,0 +1,17 @@
+(function (window, angular, $, Liferay, undefined) {
+	'use strict';
+	var module = angular.module("<%=moduleName %>"<%=initModule ? ", []" : ""%>);
+
+	<%=LiferayJSONService%>
+
+	<%=AuthService%>
+
+	<%=HelperService%>
+
+	<%=LanguageService%>
+
+	<%=ngLiferayAuth%>
+
+	<%=ngLiferayHttp%>
+
+})(window, window.angular, window.jQuery, window.Liferay);

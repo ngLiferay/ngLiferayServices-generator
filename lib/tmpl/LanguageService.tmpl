@@ -1,0 +1,36 @@
+module
+    .factory('LanguageService', function(ngLiferayHttp, ngLiferayAuth, HelperService, $q) {
+      var cache = {};
+
+      var url = "/language/" + ngLiferayAuth.themeDisplay.languageId + "/",
+        R = ngLiferayHttp('', {
+          _get: {
+            method: "POST"
+          }
+        });
+
+      R.get = function(key, extraParams) {
+        var deferred = $q.defer(),
+          val = !extraParams && cache[key];
+
+        if (val) {
+          deferred.resolve(val);
+        } else {
+          var serializeExtraParams = extraParams ? angular.isArray(extraParams) ? extraParams.join("/")
+          : extraParams: "";
+
+          R._get(url + key + "/" + serializeExtraParams, {
+            p_auth: ngLiferayAuth.authToken
+          }).then(function(val) {
+            if(!extraParams){
+              cache[key] = val;
+            }
+            deferred.resolve(val);
+          });
+        }
+        return deferred.promise;
+      };
+
+      return R;
+
+    });

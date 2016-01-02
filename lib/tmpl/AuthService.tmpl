@@ -1,0 +1,18 @@
+module
+.factory("AuthService", function (ngLiferayHttp, HelperService) {
+	var loginURL = '<%=loginURL %>', 
+		logoutURL = '<%=logoutURL %>';
+		
+	var R = ngLiferayHttp('', {
+			login : {
+				url : loginURL,
+				method : "POST",
+				namespace:"<%=loginPortletId%>"
+			},
+			logout : {
+				url : logoutURL
+			}
+		});
+
+	return R;
+});

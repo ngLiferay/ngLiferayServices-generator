@@ -1,0 +1,96 @@
+module
+.provider("ngLiferayHttp", function ngLiferayHttpProvider() {
+	var noop = angular.noop,
+	forEach = angular.forEach,
+	extend = angular.extend,
+	copy = angular.copy,
+	isFunction = angular.isFunction,
+	isString = angular.isString;
+	this.$get = ['$http', '$q', '$httpParamSerializerJQLike', function ($http, $q, $httpParamSerializerJQLike) {
+			return function (url, actions) {
+				var service = {};
+
+				/**
+				 * obj has 3 properties
+				 * 	url -
+				 * 	method -
+				 * 	data -
+				 */
+				function doHttpCall(obj) {
+					obj.method = obj.method || "GET";
+					var deferred = $q.defer();
+
+					//Checking liferay services cmd parameter & stringify it.
+					var cmd = obj.data.cmd;
+					if (cmd) {
+						obj.data.cmd = JSON.stringify(cmd);
+					}
+					var o = {
+						url : obj.url,
+						method : obj.method
+					};
+
+					if (obj.method.toUpperCase() === "POST") {
+						o.data = $httpParamSerializerJQLike(obj.data);
+						o.headers = {
+							'Content-Type' : 'application/x-www-form-urlencoded'
+						};
+					} else { // for GET requests
+						o.params = obj.data;
+					}
+
+					$http(o).success(function (data) {
+						deferred.resolve(data);
+					}).error(function (data) {
+						deferred.reject(data);
+					});
+
+					return deferred.promise;
+				}
+
+				/**
+				 * action properties:
+				 * 	url: url to call http
+				 * 	method: Http method, POST or GET
+				 * 	params: data or params provided in http call
+				 */
+
+				forEach(actions, function (action, name) {
+
+					/**
+					 * action url: will override the url provided
+					 * data: data provided to http
+					 */
+					service[name] = function (actionURL, data) {
+						var u;
+						if (isString(actionURL)) {
+							u = actionURL;
+						} else {
+							u = action.url || url;
+							data = actionURL;
+						}
+						var o = {
+							url : u,
+							method : action.method,
+							data : extend({}, action.params, data)
+						};
+						
+						//change params name if namespace is provided in action
+		              	var ns = action.namespace;
+		              	if(ns){
+		            	  	data = {};
+		            	  	forEach(o.data, function(d, key){
+		            		  	data["_" + ns + "_" + key] = d;
+		            	  	});
+		            	  	o.data = data;
+		              	}
+						return doHttpCall(o);
+					};
+				});
+
+				return service;
+			};
+		}
+	];
+
+});
